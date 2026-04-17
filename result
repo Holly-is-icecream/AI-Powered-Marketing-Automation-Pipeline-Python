@@ -1,0 +1,53 @@
+=== Channel Summary ===
+    channel  impressions  clicks  conversions  revenue   ctr  conversion_rate
+0  Facebook        22000    1100          105     2100  0.05         0.095455
+1    Google        17000     850           85     1850  0.05         0.100000
+
+=== Full Report ===
+
+Marketing Performance Summary
+
+- The channel with the highest total revenue is Facebook.
+- The channel with the highest conversion rate is Google.
+
+Channel-level details:
+
+Facebook: Revenue=2100, CTR=5.00%, Conversion Rate=9.55%
+Google: Revenue=1850, CTR=5.00%, Conversion Rate=10.00%
+
+Key Insights & Recommendations:
+
+- Facebook is the top revenue driver. Maintain or scale investment.
+- Google has a strong conversion rate but relatively lower traffic. Increasing budget may drive more revenue.
+
+
+AI-Generated Insights
+
+Based on the data, Facebook drives the highest revenue, indicating strong overall scale and volume.
+Google shows the highest conversion rate, suggesting more efficient traffic quality.
+
+Recommendations:
+- Maintain investment in Facebook to preserve revenue scale.
+- Test additional budget allocation for Google to capture more high-quality conversions.
+- Continue monitoring both traffic efficiency and channel-level return to guide future campaign optimization.
+
+
+=== Automation Impact ===
+
+Automation Impact Summary
+
+- Estimated manual reporting time: 45 minutes
+- Estimated automated reporting time: 5 minutes
+- Time saved per run: 40 minutes
+- Estimated reduction in reporting effort: 88.89%
+
+Automated steps included:
+1. Data ingestion
+2. Data cleaning
+3. KPI calculation
+4. Channel-level aggregation
+5. Rule-based recommendation generation
+6. AI-assisted insight generation
+
+
+All files saved to: C:\Users\陈浩林\output
