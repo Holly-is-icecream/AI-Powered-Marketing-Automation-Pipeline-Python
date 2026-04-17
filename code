@@ -1,0 +1,205 @@
+import pandas as pd
+from pathlib import Path
+
+
+def load_data(file_path):
+    """Load Excel data."""
+    df = pd.read_excel(file_path)
+    return df
+
+
+def clean_data(df):
+    """Basic data cleaning."""
+    df = df.dropna().copy()
+    return df
+
+
+def calculate_row_metrics(df):
+    """Calculate row-level KPIs."""
+    df["ctr"] = df["clicks"] / df["impressions"]
+    df["conversion_rate"] = df["conversions"] / df["clicks"]
+    return df
+
+
+def aggregate_by_channel(df):
+    """Aggregate metrics by marketing channel."""
+    summary = df.groupby("channel").agg({
+        "impressions": "sum",
+        "clicks": "sum",
+        "conversions": "sum",
+        "revenue": "sum"
+    }).reset_index()
+
+    summary["ctr"] = summary["clicks"] / summary["impressions"]
+    summary["conversion_rate"] = summary["conversions"] / summary["clicks"]
+
+    return summary
+
+
+def generate_basic_report(summary):
+    """Generate a KPI summary report."""
+    top_revenue_channel = summary.loc[summary["revenue"].idxmax(), "channel"]
+    top_conversion_channel = summary.loc[summary["conversion_rate"].idxmax(), "channel"]
+
+    report = f"""
+Marketing Performance Summary
+
+- The channel with the highest total revenue is {top_revenue_channel}.
+- The channel with the highest conversion rate is {top_conversion_channel}.
+
+Channel-level details:
+"""
+
+    for _, row in summary.iterrows():
+        report += (
+            f"\n{row['channel']}: "
+            f"Revenue={row['revenue']}, "
+            f"CTR={row['ctr']:.2%}, "
+            f"Conversion Rate={row['conversion_rate']:.2%}"
+        )
+
+    return report
+
+
+def generate_rule_based_insights(summary):
+    """Generate rule-based business recommendations."""
+    insights = "\n\nKey Insights & Recommendations:\n"
+
+    for _, row in summary.iterrows():
+        channel = row["channel"]
+        ctr = row["ctr"]
+        cr = row["conversion_rate"]
+        revenue = row["revenue"]
+        clicks = row["clicks"]
+
+        if ctr < 0.05:
+            insights += f"\n- {channel} has relatively low CTR. Consider improving ad creatives or targeting."
+
+        if cr >= 0.10 and clicks < 1000:
+            insights += f"\n- {channel} has a strong conversion rate but relatively lower traffic. Increasing budget may drive more revenue."
+
+        if revenue == summary["revenue"].max():
+            insights += f"\n- {channel} is the top revenue driver. Maintain or scale investment."
+
+    return insights
+
+
+def build_ai_prompt(summary):
+    """Convert summary table into text for AI prompt."""
+    data_text = ""
+
+    for _, row in summary.iterrows():
+        data_text += (
+            f"{row['channel']}: "
+            f"Revenue={row['revenue']}, "
+            f"CTR={row['ctr']:.2%}, "
+            f"Conversion Rate={row['conversion_rate']:.2%}\n"
+        )
+
+    prompt = f"""
+You are a data analyst.
+
+Here is marketing performance data:
+
+{data_text}
+
+Please provide:
+1. Key insights
+2. Performance comparison across channels
+3. Actionable recommendations
+
+Keep it concise and business-focused.
+"""
+    return prompt
+
+
+def generate_mock_ai_report(summary):
+    """Simulated AI-generated report."""
+    top_revenue_channel = summary.loc[summary["revenue"].idxmax(), "channel"]
+    top_conversion_channel = summary.loc[summary["conversion_rate"].idxmax(), "channel"]
+
+    ai_report = f"""
+AI-Generated Insights
+
+Based on the data, {top_revenue_channel} drives the highest revenue, indicating strong overall scale and volume.
+{top_conversion_channel} shows the highest conversion rate, suggesting more efficient traffic quality.
+
+Recommendations:
+- Maintain investment in {top_revenue_channel} to preserve revenue scale.
+- Test additional budget allocation for {top_conversion_channel} to capture more high-quality conversions.
+- Continue monitoring both traffic efficiency and channel-level return to guide future campaign optimization.
+"""
+    return ai_report
+
+
+def generate_impact_report():
+    """Estimate automation impact."""
+    manual_minutes = 45
+    automated_minutes = 5
+    time_saved = manual_minutes - automated_minutes
+    reduction_rate = time_saved / manual_minutes
+
+    impact_report = f"""
+Automation Impact Summary
+
+- Estimated manual reporting time: {manual_minutes} minutes
+- Estimated automated reporting time: {automated_minutes} minutes
+- Time saved per run: {time_saved} minutes
+- Estimated reduction in reporting effort: {reduction_rate:.2%}
+
+Automated steps included:
+1. Data ingestion
+2. Data cleaning
+3. KPI calculation
+4. Channel-level aggregation
+5. Rule-based recommendation generation
+6. AI-assisted insight generation
+"""
+    return impact_report
+
+
+def save_text(content, output_path):
+    """Save text content to file."""
+    with open(output_path, "w", encoding="utf-8") as f:
+        f.write(content)
+
+
+def main():
+    input_file = "data.xlsx"
+    output_dir = Path("output")
+    output_dir.mkdir(exist_ok=True)
+
+    # 1. Load and process data
+    df = load_data(input_file)
+    df = clean_data(df)
+    df = calculate_row_metrics(df)
+    summary = aggregate_by_channel(df)
+
+    # 2. Generate outputs
+    basic_report = generate_basic_report(summary)
+    rule_based_insights = generate_rule_based_insights(summary)
+    ai_prompt = build_ai_prompt(summary)
+    ai_report = generate_mock_ai_report(summary)
+    impact_report = generate_impact_report()
+
+    full_report = basic_report + rule_based_insights + "\n\n" + ai_report
+
+    # 3. Save outputs
+    summary.to_csv(output_dir / "channel_summary.csv", index=False)
+    save_text(full_report, output_dir / "marketing_full_report.txt")
+    save_text(ai_prompt, output_dir / "ai_prompt.txt")
+    save_text(ai_report, output_dir / "ai_report.txt")
+    save_text(impact_report, output_dir / "automation_impact.txt")
+
+    # 4. Print key outputs
+    print("=== Channel Summary ===")
+    print(summary)
+    print("\n=== Full Report ===")
+    print(full_report)
+    print("\n=== Automation Impact ===")
+    print(impact_report)
+    print(f"\nAll files saved to: {output_dir.resolve()}")
+
+
+if __name__ == "__main__":
+    main()
